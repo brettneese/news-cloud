@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <script src="./lib/parseBqResponse.js" charset="utf-8"></script>
+    <script src="./lib/d3/d3.js" charset="utf-8"></script>
+    <script src="./lib/d3/d3.layout.cloud.js"></script>
+    <script src="./lib/d3.wordcloud.js"></script>
+    <script src="https://apis.google.com/js/client.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
+
+    <script>
+      // User Submitted Variables
+      var project_id = 'opentransit-org';
+      var client_id = '969766284145-977b7gnshuv7g97jmosvpha0jgncvb33.apps.googleusercontent.com';
+
+      var config = {
+        'client_id': client_id,
+        'scope': 'https://www.googleapis.com/auth/bigquery'
+      };
+
+      function runQuery() {
+       var request = gapi.client.bigquery.jobs.query({
+          'projectId': project_id,
+          'timeoutMs': '30000',
+          'query': 'SELECT Actor1Name as text, NumMentions as size FROM [gdelt-bq:full.events] WHERE Actor1Name != "" AND SQLDATE = 20170406 ORDER BY NumMentions DESC LIMIT 250;'
+        });
+        request.execute(function(response) {     
+            var data = parseResponse(response.result).data;
+            console.log(data);
+            
+            // http://stackoverflow.com/questions/1248081/get-the-browser-viewport-dimensions-with-javascript
+            var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) - 20;
+            var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 20;
+
+            d3.wordcloud()
+                .size([w, h])
+                .scale('log')
+                .fill(d3.scale.ordinal().range(["#884400", "#448800", "#888800", "#444400"]))
+                .words(data)
+                .selector('#result_box')
+                .font('Oswald')
+                .start();
+
+            $('#query_button').fadeOut();
+        });
+
+        $('#query_button').fadeOut();        
+        $('#client_initiated').fadeOut();
+      }
+      
+     
+      function auth() {
+        gapi.auth.authorize(config, function() {
+            gapi.client.load('bigquery', 'v2');
+            $('#client_initiated').html('BigQuery client initiated');
+            $('#auth_button').fadeOut();
+            $('#query_button').fadeIn();
+            runQuery();
+        });
+      }
+
+    </script>
+  </head>
+
+  <body>
+    <button id="auth_button" onclick="auth();">Authorize</button>
+    <div id="client_initiated"></div>
+    <button id="query_button" style="display:none;" onclick="runQuery();">Run Query</button>
+    <div id="result_box"></div>
+  </body>
+</html>
