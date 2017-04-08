@@ -1,7 +1,8 @@
 <html>
   <head>
-    <script src="./lib/parseBqResponse.js" charset="utf-8"></script>
-    <script src="./lib/d3/d3.js" charset="utf-8"></script>
+    <script src="./lib/util.js"></script>
+    <script src="./lib/parseBqResponse.js"></script>
+    <script src="./lib/d3/d3.js"></script>
     <script src="./lib/d3/d3.layout.cloud.js"></script>
     <script src="./lib/d3.wordcloud.js"></script>
     <script src="https://apis.google.com/js/client.js"></script>
@@ -18,11 +19,15 @@
         'scope': 'https://www.googleapis.com/auth/bigquery'
       };
 
-      function runQuery() {
+
+  function runQuery() {
+      var d = new Date();
+      var sqldate = getQueryVariable('date') || d.sqlDate();
+
        var request = gapi.client.bigquery.jobs.query({
           'projectId': project_id,
           'timeoutMs': '30000',
-          'query': 'SELECT Actor1Name as text, NumMentions as size FROM [gdelt-bq:full.events] WHERE Actor1Name != "" AND SQLDATE = 20170406 ORDER BY NumMentions DESC LIMIT 250;'
+          'query': 'SELECT Actor1Name as text, NumMentions as size FROM [gdelt-bq:full.events] WHERE Actor1Name != "" AND SQLDATE = ' + sqldate + ' ORDER BY NumMentions DESC LIMIT 250;'
         });
         request.execute(function(response) {     
             var data = parseResponse(response.result).data;
@@ -31,7 +36,6 @@
             // http://stackoverflow.com/questions/1248081/get-the-browser-viewport-dimensions-with-javascript
             var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) - 20;
             var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 20;
-
             d3.wordcloud()
                 .size([w, h])
                 .scale('log')
@@ -40,15 +44,48 @@
                 .selector('#result_box')
                 .font('Oswald')
                 .start();
-
             $('#query_button').fadeOut();
         });
-
         $('#query_button').fadeOut();        
         $('#client_initiated').fadeOut();
       }
       
-     
+
+    //   function runQuery() {
+    //     var d = new Date();
+    //     d.setDate(d.getDate() - 1);
+
+    //     var sqldate = getQueryVariable('date') || d.sqlDate();
+    //     console.log(sqldate);
+    //     var request = gapi.client.bigquery.jobs.query({
+    //         'projectId': project_id,
+    //         'timeoutMs': '30000',
+    //         'query': 'SELECT Actor1Name as text, NumMentions as size FROM [gdelt-bq:full.events] WHERE Actor1Name != "" AND SQLDATE = ' + sqldate + ' ORDER BY NumMentions DESC LIMIT 250;'
+    //     });
+        
+    //     request.execute(function(response) {     
+    //         var data = parseResponse(response.result).data;
+    //         console.log(data);
+    //         // http://stackoverflow.com/questions/1248081/get-the-browser-viewport-dimensions-with-javascript
+    //         var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) - 20;
+    //         var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 20;
+
+    //         d3.wordcloud()
+    //             .size([w, h])
+    //             .scale('log')
+    //             .fill(d3.scale.ordinal().range(["#884400", "#448800", "#888800", "#444400"]))
+    //             .words(data)
+    //             .selector('#result_box')
+    //             .font('Oswald')
+    //             .start();
+
+    //         $('#query_button').fadeOut();
+    //     });
+
+    //     $('#query_button').fadeOut();        
+    //     $('#client_initiated').fadeOut();
+    //   }
+      
       function auth() {
         gapi.auth.authorize(config, function() {
             gapi.client.load('bigquery', 'v2');
