@@ -4,10 +4,12 @@
  * @param {!Object} res Cloud Function response context.
  */
 
-var bigQuery = require('@google-cloud/bigquery')({
-  projectId: 'digita-city',
-  keyFilename: './keyfile.json'
-});
+var bigQuery = require('@google-cloud/bigquery')();
+
+// //{
+//   projectId: 'digita-city',
+//   keyFilename: './keyfile.json'
+// }
 
 // http://stackoverflow.com/questions/5129624/convert-js-date-time-to-mysql-datetime
 function twoDigits(d) {
@@ -43,3 +45,11 @@ exports.queryBigQuery = function queryBigQuery (req, res) {
   });
 
 };
+
+// var express = require('express')
+// var app = express()
+
+// app.get('/', this.queryBigQuery)
+// app.listen(3000, function () {
+//   console.log('Example app listening on port 3000!')
+// })
