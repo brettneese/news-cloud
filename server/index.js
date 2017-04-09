@@ -56,10 +56,10 @@ exports.queryBigQuery = function queryBigQuery (req, res) {
         sourceTable = 'gdelt-bq:full.events';
     }
   
-    const query = 'SELECT Actor1Name as text, NumMentions as size, SOURCEURL as href FROM [' + sourceTable +  '_partitioned] WHERE Actor1Name != "" AND SQLDATE = ' +  d.sqlDate()  + ' AND _PARTITIONTIME BETWEEN TIMESTAMP(\'' + start.sqlDateHyphenated() + '\') AND TIMESTAMP(\'' + d.sqlDateHyphenated() + '\') ORDER BY NumMentions DESC LIMIT 250;'
+    const query = 'SELECT Actor1Name as text, NumSources as size, SOURCEURL as href FROM [' + sourceTable +  '_partitioned] WHERE Actor1Name != "" AND SQLDATE = ' +  d.sqlDate()  + ' AND _PARTITIONTIME BETWEEN TIMESTAMP(\'' + start.sqlDateHyphenated() + '\') AND TIMESTAMP(\'' + d.sqlDateHyphenated() + '\') ORDER BY NumMentions DESC LIMIT 250;'
     
     console.log(query);
-    
+
     bigQuery.query(query, function(err, rows) {
       if (err) {
         res.status(500).send(err);
