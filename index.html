@@ -1,21 +1,16 @@
 <html>
   <head>
-    <script src="./lib/util.js"></script>
-    <script src="./lib/parseBqResponse.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js"></script>
     <script src="./lib/d3/d3.layout.cloud.js"></script>
     <script src="./lib/d3.wordcloud.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="./lib/query.js"></script>
 
-    <script src="https://apis.google.com/js/client.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=Oswald" rel="stylesheet">
   </head>
 
   <body>
-    <button id="auth_button" onclick="auth();">Authorize</button>
-    <div id="client_initiated"></div>
-    <button id="query_button" style="display:none;" onclick="runQuery();">Run Query</button>
-    <div id="result_box"></div>
+    <img src="loading.svg" id="loading" style="display: block; margin: 0 auto;">
+    <div id="wordcloud"></div>
   </body>
 </html>
