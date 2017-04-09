@@ -23,7 +23,15 @@ Date.prototype.sqlDate = function() {
 };
 
 exports.queryBigQuery = function queryBigQuery (req, res) {
-  
+    res.header('Content-Type','application/json');
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+    //respond to CORS preflight requests
+    if (req.method == 'OPTIONS') {
+        res.status(204).send('');
+    }
+
   const d = new Date();
   const sqldate = req.query.sqldate || req.body.sqldate || d.sqlDate();
 
