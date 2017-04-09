@@ -25,7 +25,7 @@ Date.prototype.sqlDate = function() {
 exports.queryBigQuery = function queryBigQuery (req, res) {
   
   const d = new Date();
-  const sqldate = req.query.sqldate || d.sqlDate();
+  const sqldate = req.query.sqldate || req.body.sqldate || d.sqlDate();
 
   let sourceTable = 'gdelt-bq:gdeltv2.events';
   if(sqldate < 20050220){ 
