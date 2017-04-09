@@ -40,9 +40,9 @@ exports.queryBigQuery = function queryBigQuery (req, res) {
     var d = new Date()
     if(req.body.date){
       d = new Date(req.body.date);
-    }
-
-    if(req.query.date){
+      console.log(req.body.date)
+      console.log(typeof(req.body.date))  
+    } else if(req.query.date){
       d = new Date(req.query.date);
     }
     
