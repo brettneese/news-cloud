@@ -20,6 +20,17 @@ Date.prototype.sqlDate = function() {
     return this.getUTCFullYear() + twoDigits(1 + this.getUTCMonth()) + twoDigits(this.getUTCDate());
 };
 
+exports.helloWorld = function helloWorld (req, res) {
+  if (req.body.message === undefined) {
+    // This is an error case, as "message" is required
+    res.status(400).send('No message defined!');
+  } else {
+    // Everything is ok
+    console.log(req.body.message);
+    res.status(200).end();
+  }
+};
+
 exports.query = function query(req, res) {
 
   const d = new Date();
