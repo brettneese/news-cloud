@@ -5,10 +5,10 @@
  */
 
 var bigQuery = require('@google-cloud/bigquery')(
-  {
-    projectId: 'digita-city',
-    keyFilename: './keyfile.json'
-  }
+  // {
+  //   projectId: 'digita-city',
+  //   keyFilename: './keyfile.json'
+  // }
 );
 
 // http://stackoverflow.com/questions/5129624/convert-js-date-time-to-mysql-datetime
