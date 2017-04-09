@@ -69,6 +69,3 @@ exports.queryBigQuery = function queryBigQuery (req, res) {
     });
 
 };
-
-var express = require('express')
-var app = express()
