@@ -4,7 +4,6 @@
  * @param {!Object} res Cloud Function response context.
  */
 
-var parseResponse = require('bigquery-parser');
 var bigQuery = require('@google-cloud/bigquery')({
   projectId: 'digita-city',
   keyFilename: './keyfile.json'
