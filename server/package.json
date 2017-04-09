@@ -1,0 +1,13 @@
+{
+  "name": "news-cloud-server",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": {
+    "name": "Brett Neese",
+    "email": "brett@neese.rocks"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^0.9.0",
+    "bigquery-parser": "0.0.3"
+  }
+}
