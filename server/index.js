@@ -4,12 +4,12 @@
  * @param {!Object} res Cloud Function response context.
  */
 
-var bigQuery = require('@google-cloud/bigquery')();
-
-// //{
-//   projectId: 'digita-city',
-//   keyFilename: './keyfile.json'
-// }
+var bigQuery = require('@google-cloud/bigquery')(
+  {
+    projectId: 'digita-city',
+    keyFilename: './keyfile.json'
+  }
+);
 
 // http://stackoverflow.com/questions/5129624/convert-js-date-time-to-mysql-datetime
 function twoDigits(d) {
@@ -22,6 +22,11 @@ Date.prototype.sqlDate = function() {
     return this.getUTCFullYear() + twoDigits(1 + this.getUTCMonth()) + twoDigits(this.getUTCDate());
 };
 
+Date.prototype.sqlDateHyphenated = function() {
+    return this.getUTCFullYear() + '-' + twoDigits(1 + this.getUTCMonth()) + '-' + twoDigits(this.getUTCDate());
+};
+
+
 exports.queryBigQuery = function queryBigQuery (req, res) {
     res.header('Content-Type','application/json');
     res.header('Access-Control-Allow-Origin', '*');
@@ -32,32 +37,38 @@ exports.queryBigQuery = function queryBigQuery (req, res) {
         res.status(204).send('');
     }
 
-  const d = new Date();
-  const sqldate = req.query.sqldate || req.body.sqldate || d.sqlDate();
+    var d = new Date()
 
-  let sourceTable = 'gdelt-bq:gdeltv2.events';
-  if(sqldate < 20050220){ 
-      sourceTable = 'gdelt-bq:full.events';
-  }
-
-  const query = 'SELECT Actor1Name as text, NumMentions as size, SOURCEURL as href FROM [' + sourceTable +  '] WHERE Actor1Name != "" AND SQLDATE = ' + sqldate + ' ORDER BY NumMentions DESC LIMIT 250;'
-
-  bigQuery.query(query, function(err, rows) {
-    if (err) {
-      res.status(500).send(err);
-    } else if (!err) {
-      res.status(200).send(rows);
-    } else {
-      res.status(500).send('unknown error');
+    if(req.query.sqlDate){
+      d.setDate(req.query.sqlDate);
     }
-  });
+
+    if(req.body.sqlDate){
+      d.setDate(req.body.sqlDate)
+    }
+    
+    // start looking at the partition from the day before
+    let start = new Date(d);
+    start.setDate(d.getDate() - 1);
+
+    let sourceTable = 'gdelt-bq:gdeltv2.events';
+    if(d.sqlDate < 20050220){ 
+        sourceTable = 'gdelt-bq:full.events';
+    }
+  
+    const query = 'SELECT Actor1Name as text, NumMentions as size, SOURCEURL as href FROM [' + sourceTable +  '_partitioned] WHERE Actor1Name != "" AND SQLDATE = ' +  d.sqlDate()  + ' AND _PARTITIONTIME BETWEEN TIMESTAMP(\'' + start.sqlDateHyphenated() + '\') AND TIMESTAMP(\'' + d.sqlDateHyphenated() + '\') ORDER BY NumMentions DESC LIMIT 250;'
+    
+    bigQuery.query(query, function(err, rows) {
+      if (err) {
+        res.status(500).send(err);
+      } else if (!err) {
+        res.status(200).send(rows);
+      } else {
+        res.status(500).send('unknown error');
+      }
+    });
 
 };
 
-// var express = require('express')
-// var app = express()
-
-// app.get('/', this.queryBigQuery)
-// app.listen(3000, function () {
-//   console.log('Example app listening on port 3000!')
-// })
+var express = require('express')
+var app = express()
