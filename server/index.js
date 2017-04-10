@@ -31,6 +31,7 @@ exports.queryBigQuery = function queryBigQuery (req, res) {
     res.header('Content-Type','application/json');
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Cache-Control', 'max-age=900')
 
     //respond to CORS preflight requests
     if (req.method == 'OPTIONS') {
@@ -38,12 +39,13 @@ exports.queryBigQuery = function queryBigQuery (req, res) {
     }
 
     var d = new Date()
-    if(req.body.date){
-      d = new Date(req.body.date);
-      console.log(req.body.date)
-      console.log(typeof(req.body.date))  
-    } else if(req.query.date){
+    
+    if(req.query.date){
+      res.header('Cache-Control', 'max-age=31536000')
+    
       d = new Date(req.query.date);
+      console.log(d);
+
     }
     
     // start looking at the partition from the day before
